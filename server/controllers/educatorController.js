@@ -61,6 +61,38 @@ export const addCourse = async (req, res) => {
     }
 }
 
+// Delete a Course
+export const deleteCourse = async (req, res) => {
+    try {
+      const educatorId = req.auth.userId;
+      const { courseId } = req.params;
+  
+      console.log('🧑‍🏫 Xóa khóa học:', courseId, 'bởi giáo viên:', educatorId);
+  
+      const course = await Course.findById(courseId);
+  
+      if (!course) {
+        console.log('❌ Không tìm thấy khóa học');
+        return res.status(404).json({ success: false, message: 'Course not found' });
+      }
+  
+      if (course.educator.toString() !== educatorId) {
+        console.log('🚫 Không có quyền xóa');
+        return res.status(403).json({ success: false, message: 'Unauthorized to delete this course' });
+      }
+  
+      await Course.findByIdAndDelete(courseId);
+      console.log('✅ Đã xóa khóa học');
+  
+      return res.status(200).json({ success: true, message: 'Course deleted successfully' });
+  
+    } catch (error) {
+      console.error('🔥 Lỗi khi xóa:', error);
+      return res.status(500).json({ success: false, message: 'Server error: ' + error.message });
+    }
+  };
+  
+
 // Get Educator Courses
 export const getEducatorCourses = async (req, res) => {
     try {

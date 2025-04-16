@@ -5,9 +5,9 @@ const TestimonialsSection = () => {
 
   return (
     <div className="pb-14 px-8 md:px-0">
-      <h2 className="text-3xl font-medium text-gray-800">Testimonials</h2>
+      <h2 className="text-3xl font-medium text-gray-800">Lời chứng thực</h2>
       <p className="md:text-base text-gray-500 mt-3">
-        Hear from our learners as they share their journeys of transformation, success, and how our <br /> platform has made a difference in their lives.
+      Hãy lắng nghe những người học chia sẻ về hành trình chuyển đổi, thành công và <br /> cách nền tảng của chúng tôi đã tạo nên sự khác biệt trong cuộc sống của họ.
       </p>
       <div className="grid grid-cols-auto gap-8 mt-14">
         {dummyTestimonial.map((testimonial, index) => (
@@ -36,7 +36,7 @@ const TestimonialsSection = () => {
               <p className="text-gray-500 mt-5">{testimonial.feedback}</p>
             </div>
             <a href="#" className="text-blue-500 underline px-5">
-              Read more
+              Đọc thêm
             </a>
           </div>
         ))}

@@ -9,6 +9,8 @@ const MyCourses = () => {
   const { backendUrl, isEducator, currency, getToken } = useContext(AppContext)
 
   const [courses, setCourses] = useState(null)
+  const [selectedCourseId, setSelectedCourseId] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const fetchEducatorCourses = async () => {
 
@@ -58,14 +60,69 @@ const MyCourses = () => {
                   <td className="px-4 py-3">
                     {new Date(course.createdAt).toLocaleDateString()}
                   </td>
+                  <td className="px-4 py-3"> {/* ✅ Thêm cột mới chứa nút xoá */}
+    <button
+      className="text-red-500 hover:underline"
+      onClick={() => {
+        setSelectedCourseId(course._id);
+        setShowConfirm(true);
+      }}
+    >
+      🗑️ Xóa
+    </button>
+  </td>
                 </tr>
               ))}
-            </tbody>
+               </tbody>
           </table>
+          {showConfirm && (
+  <DeleteCoursePopup
+    courseId={selectedCourseId}
+    onClose={() => setShowConfirm(false)}
+    onDeleted={fetchEducatorCourses}
+  />
+)}
         </div>
       </div>
     </div>
   ) : <Loading />
 };
 
+
+
+const DeleteCoursePopup = ({ courseId, onClose, onDeleted }) => {
+  const { getToken, backendUrl } = useContext(AppContext);
+  const handleDelete = async () => {
+    try {
+      const token = await getToken();
+      const { data } = await axios.delete(`${backendUrl}/api/educator/delete-course/${courseId}`, { headers: { Authorization: `Bearer ${token}` } });
+
+      if (data.success) {
+        toast.success('Đã xóa khóa học');
+        onDeleted();
+      } else {
+        toast.error('Xóa thất bại: ' + data.message);
+      }
+    } catch (error) {
+      toast.error('Lỗi khi xóa khóa học');
+      console.error(error.response.data); 
+    }
+    onClose();
+  };
+
+  return (
+    <div style={{
+      position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+      backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex',
+      alignItems: 'center', justifyContent: 'center',
+      zIndex: 9999,
+    }}>
+      <div style={{ background: 'white', padding: 20, borderRadius: 10, minWidth: 300 }}>
+        <p>Bạn có chắc chắn muốn xóa khóa học này?</p>
+        <button onClick={handleDelete} style={{ marginRight: 10 }}>✅ Đồng ý</button>
+        <button onClick={onClose}>❌ Hủy</button>
+      </div>
+    </div>
+  );
+};
 export default MyCourses;
